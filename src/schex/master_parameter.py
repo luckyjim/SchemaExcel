@@ -46,6 +46,8 @@ class MasterParameterToJson(object):
         self.xlsx_filename = xlsx_filename
         self.json_dict = {}
         self.json_dict_prefix = {}
+        self.component = None
+        self.json_file = ""
 
     def get_schema_json(self, component):
         """
@@ -58,6 +60,8 @@ class MasterParameterToJson(object):
         :return: schema json
         :rtype: dict
         """
+        # 1 download component description from sheet and build JSON schema dictionary
+        # 2 write JSON schema in file if to_file is True
         self.json_dict_prefix = {
             "$schema": "http://json-schema.org/draft-04/schema#",
             "title": f"JSON SCHEMA of {component.upper()} component",
@@ -66,7 +70,6 @@ class MasterParameterToJson(object):
             "properties": {},
             "required": [],
         }
-
         self.component = self._get_sheet_component(component)
         if isinstance(self.component, px.sheet.Sheet):
             if self._build_json_dict():
@@ -104,6 +107,8 @@ class MasterParameterToJson(object):
         if component in book.sheet_names():
             sheet = book.sheet_by_name(component)
             sheet.delete_rows([1])
+            # Transformer une ligne donnée (souvent la première) en en-têtes de colonnes, 
+            # afin de pouvoir accéder aux données par nom plutôt que par index numérique.
             sheet.name_columns_by_row(0)
             sheet.name_rows_by_column(0)
             logger.info(
@@ -120,10 +125,10 @@ class MasterParameterToJson(object):
 
     def _build_json_dict(self):
         """Build JSON schema for each parameter description in self.component"""
+
         self.json_dict = self.json_dict_prefix
         d_properties = {param: {} for param in self.component.rownames}
         required = []
-
         for param_name in self.component.rownames:
             d_values = {
                 colname: self._get_cell_value(param_name, colname)
@@ -232,6 +237,10 @@ class ParseOneRow:
             pass
         elif value_type[0] in ["number", "integer"]:
             self._parse_number(d_values)
+        elif value_type[0] == "pdf":
+            self._parse_pdf(d_values)
+        elif value_type[0] == "jpg" or value_type[0] == "jpeg":
+            self._parse_jpeg(d_values)       
         elif value_type[0] == "array" and value_type[1] == "enum":
             self._parse_array_enum(d_values)
         elif value_type[0] == "array" and (value_type[1] in ["integer", "number"]):
@@ -252,10 +261,10 @@ class ParseOneRow:
         :return: description or description [unit]
         :rtype: string
         """
+        ret = d_values["description"]
         if d_values["unit"]:
-            return d_values["description"] + ". Unit: [" + d_values["unit"] + "]"
-        else:
-            return d_values["description"]
+             ret += ". Unit: [" + d_values["unit"] + "]"
+        return ret
 
     @staticmethod
     def _parse_type(type_param):
@@ -358,6 +367,34 @@ class ParseOneRow:
             self.d_params["enum"] = ParseOneRow.RE_STR.findall(d_values["enum_item"])
         if d_values["default_value"]:
             self.d_params["default"] = d_values["default_value"]
+
+    def _parse_pdf(self, d_values):
+        """Parse parameter type which value must be in an "enum" of values
+
+        :param d_values: dictionary of "column name": "value" for a row ie a parameter
+        :type d_values: dict
+
+        :Example:
+
+            d_values dictionary :
+        """
+        self.d_params["type"] = "string"
+        self.d_params["contentEncoding"] = "base64"
+        self.d_params["contentMediaType"] = "upload:application/pdf"
+
+    def _parse_jpeg(self, d_values):
+        """Parse parameter type which value must be in an "enum" of values
+
+        :param d_values: dictionary of "column name": "value" for a row ie a parameter
+        :type d_values: dict
+
+        :Example:
+
+            d_values dictionary :
+        """
+        self.d_params["type"] = "string"
+        self.d_params["contentEncoding"] = "base64"
+        self.d_params["contentMediaType"] = "upload:image/jpeg"
 
     def _parse_number(self, d_values):
         """Parse parameter if type of value is number (float)

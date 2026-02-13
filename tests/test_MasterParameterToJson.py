@@ -23,6 +23,13 @@ dict_OK = {
 }
 
 
+def test_conversion():
+    path_master = osp.join(DATA_PATH, 'master_file_params_ecpi_v2.5.xlsx')
+    obj_px = mp.MasterParameterToJson(path_master)
+    m_dict = obj_px.get_schema_json('FOR_TEST')
+    assert m_dict != {}
+    obj_px.write_json(DATA_PATH)    
+
 def test_for_test_component():
     path_master = osp.join(DATA_PATH, 'master_file_params_ecpi_v2.5.xlsx')
     obj_px = mp.MasterParameterToJson(path_master)
@@ -111,5 +118,6 @@ def test_a_get_component():
 
 
 if __name__ == '__main__':
-    test_for_test_component()
+    #test_for_test_component()
+    test_conversion()
     
