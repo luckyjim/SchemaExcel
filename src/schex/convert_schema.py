@@ -1,7 +1,19 @@
 """
-Created on 8 juin 2021
+Module for converting Excel schema definitions to JSON schema format.
 
-Jm Colley
+This module provides classes to parse Excel spreadsheets containing parameter
+definitions and convert them into JSON Schema (draft-04) compliant dictionaries.
+The main class ConvertSchemaExcelToJson reads component descriptions from Excel
+worksheets and generates corresponding JSON schemas, while the ParseOneRow class
+handles the parsing of individual parameter rows with various data types including
+enums, numbers, arrays, and file uploads (PDF, JPEG).
+
+Classes:
+    ConvertSchemaExcelToJson: Main class for Excel to JSON schema conversion
+    ParseOneRow: Helper class for parsing individual parameter rows
+
+Author: Jm Colley
+Created: 8 juin 2021
 """
 
 import json
@@ -10,12 +22,14 @@ import os.path as osp
 import re
 
 import pyexcel as px
-import schex.tools_params as tpar
+
+
+
 
 logger = logging.getLogger(__name__)
 
 
-class MasterParameterToJson(object):
+class ConvertSchemaExcelToJson(object):
     """
     classdocs
     """
@@ -107,7 +121,7 @@ class MasterParameterToJson(object):
         if component in book.sheet_names():
             sheet = book.sheet_by_name(component)
             sheet.delete_rows([1])
-            # Transformer une ligne donnée (souvent la première) en en-têtes de colonnes, 
+            # Transformer une ligne donnée (souvent la première) en en-têtes de colonnes,
             # afin de pouvoir accéder aux données par nom plutôt que par index numérique.
             sheet.name_columns_by_row(0)
             sheet.name_rows_by_column(0)
@@ -166,7 +180,7 @@ class MasterParameterToJson(object):
 
         if colname not in self.component.colnames:
             raise KeyError(
-                f"Column '{colname}' does not exist in {self.component.colnames}"
+                f"Column '{colncheck_query.pyame}' does not exist in {self.component.colnames}"
             )
             return
         colvalue = self.component[rowname, colname]
@@ -240,7 +254,7 @@ class ParseOneRow:
         elif value_type[0] == "pdf":
             self._parse_pdf(d_values)
         elif value_type[0] == "jpg" or value_type[0] == "jpeg":
-            self._parse_jpeg(d_values)       
+            self._parse_jpeg(d_values)
         elif value_type[0] == "array" and value_type[1] == "enum":
             self._parse_array_enum(d_values)
         elif value_type[0] == "array" and (value_type[1] in ["integer", "number"]):
@@ -263,17 +277,17 @@ class ParseOneRow:
         """
         ret = d_values["description"]
         if d_values["unit"]:
-             ret += ". Unit: [" + d_values["unit"] + "]"
+            ret += ". Unit: [" + d_values["unit"] + "]"
         return ret
 
     @staticmethod
     def _parse_type(type_param):
         """check/parse type value
-
-        :param type_param: parameter type from column "type"
-        :type type_param: string
-        :return: same type except for "enum" type
-        :rtype: string
+        check_query.py
+                :param type_param: parameter type from column "type"
+                :type type_param: string
+                :return: same type except for "enum" type
+                :rtype: string
         """
         if type_param == "enum":
             return "string"
