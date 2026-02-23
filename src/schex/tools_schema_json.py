@@ -35,7 +35,7 @@ def check_add_default_dict(schema, d_pars):
     :type d_pars: dict
     """
     for k in list(d_pars.keys()):
-        if not k in list(schema["properties"].keys()):
+        if k not in list(schema["properties"].keys()):
             msg = f"\n\t#### Unknown parameter ['{k}'], not in json schema"
             msg += f" {sorted(list(schema['properties'].keys()))}"
             msg += f"\n\t#### Check the parameter name ['{k}'] in settings configuration file"

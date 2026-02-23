@@ -23,8 +23,7 @@ import re
 
 import pyexcel as px
 
-
-
+import schex.tools_params as tpar
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +40,7 @@ class ConvertSchemaExcelToJson(object):
         :param xlsx_filename: name of xlsx file which describes parameters list
         :type xlsx_filename: string
 
-        :Example:
+        :Example:test_MasterParameterToJson.py*
         - to import: from ecpi_garage.pipeline.specs.master_parameter import MasterParameterToJson
         - to init: ws = MasterParameterToJson('master_file_params_ecpi_v2.5.xlsx')
 
@@ -60,7 +59,7 @@ class ConvertSchemaExcelToJson(object):
         self.xlsx_filename = xlsx_filename
         self.json_dict = {}
         self.json_dict_prefix = {}
-        self.component = None
+        self.component = ""
         self.json_file = ""
 
     def get_schema_json(self, component):

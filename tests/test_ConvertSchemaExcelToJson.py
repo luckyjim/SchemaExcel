@@ -6,8 +6,9 @@ import os.path as osp
 import pyexcel as px
 import pytest
 
-import schex.master_parameter as mp
-import schex.tools_check as tc
+from schex.convert_schema import ConvertSchemaExcelToJson
+import schex.tools_schema_json as tc
+
 
 DATA_PATH = "data"
 
@@ -25,7 +26,7 @@ dict_OK = {
 
 def test_conversion():
     path_master = osp.join(DATA_PATH, "master_file_params_ecpi_v2.5.xlsx")
-    obj_px = mp.MasterParameterToJson(path_master)
+    obj_px = ConvertSchemaExcelToJson(path_master)
     m_dict = obj_px.get_schema_json("FOR_TEST")
     assert m_dict != {}
     obj_px.write_json(DATA_PATH)
@@ -33,7 +34,7 @@ def test_conversion():
 
 def test_for_test_component():
     path_master = osp.join(DATA_PATH, "master_file_params_ecpi_v2.5.xlsx")
-    obj_px = mp.MasterParameterToJson(path_master)
+    obj_px = ConvertSchemaExcelToJson(path_master)
     m_dict = obj_px.get_schema_json("FOR_TEST")
     assert m_dict != {}
     obj_px.write_json(DATA_PATH)
@@ -120,15 +121,15 @@ def test_for_test_component():
 def test_a_get_component():
     path_master = osp.join(DATA_PATH, "toto.xls")
     with pytest.raises(TypeError):
-        obj = mp.MasterParameterToJson(path_master)
+        obj = mp.ConvertSchemaExcelToJson(path_master)
         obj.get_schema_json("FOR_TEST")
     path_master = osp.join(DATA_PATH, "toto.xlsx")
     with pytest.raises(FileNotFoundError):
-        obj = mp.MasterParameterToJson(path_master)
+        obj = mp.ConvertSchemaExcelToJson(path_master)
         obj.get_schema_json("FOR_TEST")
     with pytest.raises(TypeError):
         path_master = osp.join(DATA_PATH, "master_file_params_ecpi_v2.4.xlsx")
-        obj = mp.MasterParameterToJson(path_master)
+        obj = mp.ConvertSchemaExcelToJson(path_master)
         obj.get_schema_json("FOR_TEST")
 
 
