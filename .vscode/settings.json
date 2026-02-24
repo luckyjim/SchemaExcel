@@ -4,7 +4,11 @@
     "python.analysis.extraPaths": [
         "./src"
     ],
-    "python.analysis.useLibraryCodeForTypes": true,
     "python.analysis.diagnosticMode": "workspace",
-    "python.terminal.activateEnvironment": true
+    "python.terminal.activateEnvironment": true,
+    "python.analysis.useLibraryCodeForTypes": false,
+    "python.analysis.inlayHints.variableTypes.enabled": false,
+    "python.analysis.inlayHints.functionReturnTypes.enabled": false,
+    "editor.inlayHints.enabled": "off",
+    "python.linting.enabled": false
 }

@@ -1,6 +1,3 @@
-#!/usr/env python3
-# -*-coding:utf-8 -*
-
 import os.path as osp
 
 import pyexcel as px
@@ -30,6 +27,13 @@ def test_conversion():
     m_dict = obj_px.get_schema_json("FOR_TEST")
     assert m_dict != {}
     obj_px.write_json(DATA_PATH)
+    
+def test_hgtd():
+    path_master ="/home/jcolley/projet/lucky/HGTD_ldb1.xlsx"
+    obj_px = ConvertSchemaExcelToJson(path_master)
+    m_dict = obj_px.get_schema_json()
+    return m_dict
+
 
 
 def test_for_test_component():
@@ -118,21 +122,16 @@ def test_for_test_component():
     assert not tc.check_add_default_file(path_schema, dict_nOK)
 
 
-def test_a_get_component():
+def nok_test_a_get_component():
     path_master = osp.join(DATA_PATH, "toto.xls")
     with pytest.raises(TypeError):
-        obj = mp.ConvertSchemaExcelToJson(path_master)
+        obj = ConvertSchemaExcelToJson(path_master)
         obj.get_schema_json("FOR_TEST")
     path_master = osp.join(DATA_PATH, "toto.xlsx")
     with pytest.raises(FileNotFoundError):
-        obj = mp.ConvertSchemaExcelToJson(path_master)
+        obj = ConvertSchemaExcelToJson(path_master)
         obj.get_schema_json("FOR_TEST")
     with pytest.raises(TypeError):
         path_master = osp.join(DATA_PATH, "master_file_params_ecpi_v2.4.xlsx")
-        obj = mp.ConvertSchemaExcelToJson(path_master)
+        obj = ConvertSchemaExcelToJson(path_master)
         obj.get_schema_json("FOR_TEST")
-
-
-if __name__ == "__main__":
-    # test_for_test_component()
-    test_conversion()

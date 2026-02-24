@@ -128,3 +128,4 @@ dmypy.json
 *~
 .DS_Store
 tests/data/for_test_schema.json
+tests/for_test_schema.json
