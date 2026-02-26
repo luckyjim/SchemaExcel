@@ -15,6 +15,7 @@ Classes:
 Author: Jm Colley
 Created: 8 juin 2021
 """
+
 from astropy.constants.codata2010 import e
 
 import json
@@ -62,7 +63,6 @@ class ConvertSchemaExcelToJson(object):
         self.json_dict_prefix = {}
         self.schema = ""
         self.json_file = ""
-    
 
     def get_schema_json(self, sheet_name=None):
         """
@@ -85,7 +85,7 @@ class ConvertSchemaExcelToJson(object):
             return l_sj
         elif isinstance(sheet_name, str):
             return [self._get_one_schema_json(sheet_name)]
-    
+
     def _get_one_schema_json(self, sheet_name):
         """
         Create schema json associated to schema
@@ -149,14 +149,10 @@ class ConvertSchemaExcelToJson(object):
             # afin de pouvoir accéder aux données par nom plutôt que par index numérique.
             sheet.name_columns_by_row(0)
             sheet.name_rows_by_column(0)
-            logger.info(
-                f"init MasterParameterToJson with {self.xlsx_file}/{schema}"
-            )
+            logger.info(f"init MasterParameterToJson with {self.xlsx_file}/{schema}")
             return sheet
         else:
-            logger.error(
-                f"schema {schema.upper()} does not exist in {xlsx_file_path}"
-            )
+            logger.error(f"schema {schema.upper()} does not exist in {xlsx_file_path}")
             raise KeyError(
                 f"schema {schema.upper()} does not exist in {xlsx_file_path}"
             )
@@ -167,13 +163,17 @@ class ConvertSchemaExcelToJson(object):
         self.json_dict = self.json_dict_prefix
         d_properties = {param: {} for param in self.schema.rownames}
         required = []
+        #print(self.schema.rownames)
         for param_name in self.schema.rownames:
+            if param_name == "" or param_name[0] == "-":
+                continue
             d_values = {
                 colname: self._get_cell_value(param_name, colname)
                 for colname in self.used_column
             }
             d_values["param_name"] = param_name
             logger.info(f"Parameter {param_name} values: {d_values}")
+            #print(f"Parameter '{param_name}'")
             d_params = ParseOneRow(d_values)
             if d_params:
                 if not d_values["default_value"] != "":
@@ -262,6 +262,7 @@ class ParseOneRow:
         :param d_values: dictionary of "column name": "value" for a row ie a parameter
         :type d_values: dict
         """
+        #print(f"parse row {d_values}")
         value_type = ParseOneRow.RE_STR.findall(d_values["type"])
         d_values["type"] = value_type
         self.d_params = {
@@ -275,7 +276,7 @@ class ParseOneRow:
             value_type[0] == "string"
         elif value_type[0] == "string":
             pass
-        elif value_type[0] in ["number", "integer","int"]:
+        elif value_type[0] in ["number", "integer", "int"]:
             self._parse_number(d_values)
         elif value_type[0] == "pdf":
             self._parse_pdf(d_values)
@@ -287,7 +288,9 @@ class ParseOneRow:
             self._parse_zip(d_values)
         elif value_type[0] == "array" and value_type[1] == "enum":
             self._parse_array_enum(d_values)
-        elif value_type[0] == "array" and (value_type[1] in ["integer", "number","in"]):
+        elif value_type[0] == "array" and (
+            value_type[1] in ["integer", "number", "in"]
+        ):
             self._parse_array_number(d_values)
         else:
             msg = f"Type {value_type} unknown. Unable to generate JSON schema for {d_values['param_name']}"
@@ -295,7 +298,6 @@ class ParseOneRow:
             # error type => stop
             # code out of pipeline can use raise
             raise (TypeError)
-        
 
     @staticmethod
     def _parse_description(d_values):
@@ -430,7 +432,7 @@ class ParseOneRow:
         self.d_params["type"] = "string"
         self.d_params["contentEncoding"] = "base64"
         self.d_params["contentMediaType"] = "upload:application/pdf"
-        
+
     def _parse_zip(self, d_values):
         """Parse parameter type which value must be in an "enum" of values
 
@@ -444,7 +446,7 @@ class ParseOneRow:
         self.d_params["type"] = "string"
         self.d_params["contentEncoding"] = "base64"
         self.d_params["contentMediaType"] = "upload:application/zip"
-        
+
     def _parse_txt(self, d_values):
         """Parse parameter type which value must be in an "enum" of values
 
