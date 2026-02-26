@@ -1,6 +1,5 @@
 {
     "python.envFile": "${workspaceFolder}/.env",
-    "python.defaultInterpreterPath": "/home/jcolley/miniforge3/envs/db_hgtd/bin/python",
     "python.analysis.extraPaths": [
         "./src"
     ],
