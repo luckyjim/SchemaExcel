@@ -11,7 +11,7 @@ pip install --upgrade setuptools pip
 * Installation from GitHub
 
 ```bash
-python -m pip install git+https://github.com/luckyjim/BROOT.git 
+python -m pip install git+https://github.com/luckyjim/SchemaExcel.git 
 ```
 
 * Update version
