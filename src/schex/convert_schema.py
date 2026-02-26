@@ -161,7 +161,8 @@ class ConvertSchemaExcelToJson(object):
         """Build JSON schema for each parameter description in self.schema"""
 
         self.json_dict = self.json_dict_prefix
-        d_properties = {param: {} for param in self.schema.rownames}
+        #d_properties = {param: {} for param in self.schema.rownames}
+        d_properties = {}
         required = []
         #print(self.schema.rownames)
         for param_name in self.schema.rownames:
