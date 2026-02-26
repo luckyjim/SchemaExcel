@@ -47,10 +47,10 @@ the result is the file [for_test_schema.json](example/for_test_schema.json)
 In your sheet define 8 columns:
 * name : name of property
 * description : string
-* default_value : if no default value implied a requied propertie
+* default_value : The absence of a default value implies a mandatory property
 * unit : string
 * type : string, number, integer, array, enum, csv, pdf, jpeg
-* enum_item
+* enum_item : 
 * array_nb_item : specific syntax see file example
 * min_max: two number
 
