@@ -1,0 +1,167 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "JSON SCHEMA of FOR_TEST schema",
+    "description": "Parameters for FOR_TEST",
+    "type": "object",
+    "properties": {
+        "par_enum": {
+            "type": "string",
+            "description": "exemple de paramètre dont la valeur doit être dans un « enum »",
+            "enum": [
+                "val1",
+                "val2",
+                "val3",
+                "val4"
+            ],
+            "default": "val1"
+        },
+        "par_path": {
+            "type": "string",
+            "description": "exemple de paramètre chemin"
+        },
+        "par_number": {
+            "type": "number",
+            "description": "exemple de paramètre de type réel. Unit: [s]",
+            "minimum": -10.0,
+            "maximum": 20.0,
+            "default": 17.4
+        },
+        "par_int": {
+            "type": "integer",
+            "description": "exemple de paramètre de type réel. Unit: [s]",
+            "minimum": -10,
+            "maximum": 20,
+            "default": 17
+        },
+        "array_enum": {
+            "type": "array",
+            "description": "exemple de paramètre dont la valeur doit être un tableau « enum ». exemple la liste des produits à sortir",
+            "items": {
+                "type": "string",
+                "enum": [
+                    "ECL-01",
+                    "ECL-02",
+                    "ECL-03",
+                    "ECL-04",
+                    "ECL-05"
+                ]
+            },
+            "minItems": 0
+        },
+        "array_2D_number": {
+            "type": "array",
+            "description": "Exemple de tableau a 2 dimensions. Un tableau de couple d’entier",
+            "items": {
+                "type": "array",
+                "items": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1023
+                },
+                "minItems": 2,
+                "maxItems": 2
+            },
+            "minItems": 1,
+            "default": [
+                [
+                    0,
+                    10
+                ]
+            ]
+        },
+        "array_2D_enum": {
+            "type": "array",
+            "description": "Exemple de tableau a 2 dimensions d’enum",
+            "items": {
+                "type": "array",
+                "items": {
+                    "type": "string",
+                    "enum": [
+                        "sta",
+                        "nsa",
+                        "neo",
+                        "dpi"
+                    ]
+                },
+                "uniqueItems": true,
+                "minItems": 1
+            },
+            "minItems": 1,
+            "default": [
+                [
+                    "sta",
+                    "nsa",
+                    "neo"
+                ],
+                [
+                    "sta",
+                    "nsa",
+                    "dpi"
+                ]
+            ]
+        },
+        "array_2D_energy": {
+            "type": "array",
+            "description": "Exemple de tableau à 2 dimensions de number. Unit: [keV]",
+            "items": {
+                "type": "array",
+                "items": {
+                    "type": "number",
+                    "minimum": 4.0,
+                    "maximum": 150.0
+                },
+                "minItems": 2,
+                "maxItems": 2
+            },
+            "minItems": 1,
+            "default": [
+                [
+                    5.2,
+                    10.4
+                ],
+                [
+                    20.1,
+                    50.53
+                ]
+            ]
+        },
+        "array_number": {
+            "type": "array",
+            "description": "",
+            "items": {
+                "type": "number",
+                "minimum": -10.3,
+                "maximum": 20.6
+            },
+            "minItems": 3,
+            "maxItems": 3,
+            "default": [
+                5.2,
+                10.4,
+                12.5
+            ]
+        },
+        "rapport": {
+            "type": "string",
+            "description": "rapport de tests pdf",
+            "contentEncoding": "base64",
+            "contentMediaType": "upload:application/pdf"
+        },
+        "photo": {
+            "type": "string",
+            "description": "au format jpeg",
+            "contentEncoding": "base64",
+            "contentMediaType": "upload:image/jpeg"
+        },
+        "photo_jpg": {
+            "type": "string",
+            "description": "au format JPG",
+            "contentEncoding": "base64",
+            "contentMediaType": "upload:image/jpeg"
+        }
+    },
+    "required": [
+        "par_path",
+        "array_enum"
+    ]
+}

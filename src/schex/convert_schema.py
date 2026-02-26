@@ -614,6 +614,12 @@ class ParseOneRow:
         if d_values["default_value"]:
             self.d_params["default"] = self._parse_array_default_value(d_values)
 
+def main():
+    import sys
+    
+    print(sys.argv)
+    obj_px = ConvertSchemaExcelToJson(sys.argv[1])
+    obj_px.get_schema_json()    
 
 # class MasterParameterToEcpiSchemaJson(MasterParameterToJson):
 #     """

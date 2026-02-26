@@ -9,6 +9,8 @@ import schex.tools_schema_json as tc
 
 DATA_PATH = "data"
 
+FILE_XLSX = "schema_example.xlsx"
+
 dict_OK = {
     "par_enum": "val3",
     "par_path": "ecpi_garage",
@@ -22,22 +24,15 @@ dict_OK = {
 
 
 def test_conversion():
-    path_master = osp.join(DATA_PATH, "master_file_params_ecpi_v2.5.xlsx")
+    path_master = osp.join(DATA_PATH, FILE_XLSX)
     obj_px = ConvertSchemaExcelToJson(path_master)
     m_dict = obj_px.get_schema_json("FOR_TEST")
     assert m_dict != {}
     obj_px.write_json(DATA_PATH)
-    
-def test_hgtd():
-    path_master ="/home/jcolley/projet/lucky/HGTD_ldb1.xlsx"
-    obj_px = ConvertSchemaExcelToJson(path_master)
-    m_dict = obj_px.get_schema_json()
-    return m_dict
-
 
 
 def test_for_test_component():
-    path_master = osp.join(DATA_PATH, "master_file_params_ecpi_v2.5.xlsx")
+    path_master = osp.join(DATA_PATH, FILE_XLSX)
     obj_px = ConvertSchemaExcelToJson(path_master)
     m_dict = obj_px.get_schema_json("FOR_TEST")
     assert m_dict != {}
@@ -132,6 +127,6 @@ def nok_test_a_get_component():
         obj = ConvertSchemaExcelToJson(path_master)
         obj.get_schema_json("FOR_TEST")
     with pytest.raises(TypeError):
-        path_master = osp.join(DATA_PATH, "master_file_params_ecpi_v2.4.xlsx")
+        path_master = osp.join(DATA_PATH, ".xlsx")
         obj = ConvertSchemaExcelToJson(path_master)
         obj.get_schema_json("FOR_TEST")

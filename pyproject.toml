@@ -33,7 +33,7 @@ dependencies = [ # Base requirements
 where = ["src"]
 
 [project.scripts]
-schex_convert = "schex.scripts.schex_convert:main"
+schex_convert = "schex.convert_schema:main"
 
 [project.urls]
 Homepage = "https://github.com/luckyjim/SchemaExcel"
