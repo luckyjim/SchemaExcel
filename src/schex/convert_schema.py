@@ -275,10 +275,10 @@ class ParseOneRow:
         logger.debug(f"{d_values}")
         if value_type[0] == "enum":
             self._parse_enum(d_values)
-        elif value_type[0] == "str":
+        elif value_type[0] == "str" or value_type[0] == "string":
             value_type[0] == "string"
-        elif value_type[0] == "string":
-            pass
+            if d_values["default_value"]:
+                self.d_params["default"] = d_values["default_value"]
         elif value_type[0] in ["number", "integer", "int"]:
             self._parse_number(d_values)
         elif value_type[0] == "pdf":
@@ -508,7 +508,7 @@ class ParseOneRow:
                     default_value = float(d_values["default_value"])
                     self.d_params["default"] = default_value
                 except TypeError:
-                    logger.erro_parse_typer(
+                    logger.error(
                         f"Unable to convert '{d_values['default_value']}' to a 'float'"
                     )
                     self.d_params["default"] = d_values["default_value"]
