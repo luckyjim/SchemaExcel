@@ -15,6 +15,7 @@ Classes:
 Author: Jm Colley
 Created: 8 juin 2021
 """
+import imp
 
 from astropy.constants.codata2010 import e
 
@@ -80,7 +81,8 @@ class ConvertSchemaExcelToJson(object):
             l_sj = []
             for sheet in book.sheet_names():
                 if sheet != "Template":
-                    print(f"sheet name: {sheet}")
+                    logger.debug(f"===========================================")
+                    logger.debug(f"sheet name: {sheet}")
                     l_sj.append(self._get_one_schema_json(sheet))
             return l_sj
         elif isinstance(sheet_name, str):
@@ -164,7 +166,7 @@ class ConvertSchemaExcelToJson(object):
         #d_properties = {param: {} for param in self.schema.rownames}
         d_properties = {}
         required = []
-        #print(self.schema.rownames)
+        logger.debug(self.schema.rownames)
         for param_name in self.schema.rownames:
             if param_name == "" or param_name[0] == "-":
                 continue
@@ -174,7 +176,7 @@ class ConvertSchemaExcelToJson(object):
             }
             d_values["param_name"] = param_name
             logger.info(f"Parameter {param_name} values: {d_values}")
-            #print(f"Parameter '{param_name}'")
+            logger.debug(f"Parameter '{param_name}'")
             d_params = ParseOneRow(d_values)
             if d_params:
                 if not d_values["default_value"] != "":
@@ -263,7 +265,7 @@ class ParseOneRow:
         :param d_values: dictionary of "column name": "value" for a row ie a parameter
         :type d_values: dict
         """
-        #print(f"parse row {d_values}")
+        logger.debug(f"parse row {d_values}")
         value_type = ParseOneRow.RE_STR.findall(d_values["type"])
         d_values["type"] = value_type
         self.d_params = {
@@ -293,6 +295,8 @@ class ParseOneRow:
             value_type[1] in ["integer", "number", "in"]
         ):
             self._parse_array_number(d_values)
+        elif value_type[0] == "array" and  value_type[1] == "string":
+            self._parse_array_string(d_values)
         else:
             msg = f"Type {value_type} unknown. Unable to generate JSON schema for {d_values['param_name']}"
             logger.error(msg)
@@ -613,42 +617,62 @@ class ParseOneRow:
 
         if d_values["default_value"]:
             self.d_params["default"] = self._parse_array_default_value(d_values)
+            
+    def _parse_array_string(self, d_values):
+        """build JSON schema of an array of string
+
+        :param d_values: dictionary of "column name": "value" for a row ie a parameter
+        :type d_values: dict
+        :raises KeyError: if type of parameter is "array", error if no value for array_nb_item
+
+        :Example:
+
+            d_values dictionary:
+            {'type': 'array,string',
+             'array_nb_item': '(1:),(2:2)',
+             'description': 'Exemple de tableau a 2 dimensions. Un tableau de couple d'entier',
+             'default_value': '[[0,10],[30,40]]',
+             'min_max': '0,1023'}
+        """
+        if d_values["array_nb_item"]:
+            if d_values["min_max"]:
+                d_min_max = self._parse_min_max(
+                    d_values["min_max"], d_values["type"][1]
+                )
+            else:
+                d_min_max = None
+
+            l_kws_for_d_params_d_item = self._parse_array_nb_item(
+                d_values["array_nb_item"]
+            )
+            if len(l_kws_for_d_params_d_item) > 1:
+                d_item = {
+                    "type": "array",
+                    "items": {"type": self._parse_type(d_values["type"][1])},
+                }
+                if d_min_max:
+                    d_item["items"].update(d_min_max)
+                d_item.update(l_kws_for_d_params_d_item[1])
+                self.d_params["items"] = d_item
+            else:
+                self.d_params["items"] = {"type": self._parse_type(d_values["type"][1])}
+                if d_min_max:
+                    self.d_params["items"].update(d_min_max)
+            self.d_params.update(l_kws_for_d_params_d_item[0])
+        else:
+            raise KeyError(
+                "A value is mandatory for 'array_nb_item' if 'type' of parameter is 'array'"
+            )
+
+        if d_values["default_value"]:
+            self.d_params["default"] = self._parse_array_default_value(d_values)
 
 def main():
     import sys
+    import logging
     
-    print(sys.argv)
+    my_fmt = "%(name)s:%(lineno)d - %(levelname)s - %(message)s"
+    logging.basicConfig(format=my_fmt, level=logging.CRITICAL)
     obj_px = ConvertSchemaExcelToJson(sys.argv[1])
     obj_px.get_schema_json()    
 
-# class MasterParameterToEcpiSchemaJson(MasterParameterToJson):
-#     """
-#     classdocs
-#     """
-
-#     def __init__(self, xlsx_filename):
-#         """
-#         Constructor
-
-#         :param xlsx_filename: name of xlsx file which describes parameters list
-#         :type xlsx_filename: string
-#         """
-#         super().__init__(xlsx_filename)
-
-#     def create_all_file_schema_json(self):
-#         """
-#         Create file schema json for all schemas in ECPI master file parameters
-#         """
-#         root_c = os.path.join(get_root_eclairs(), "ecpi", "process")
-#         # root_p = os.path.join(get_root_eclairs(), "ecpi", "pipeline")
-#         root_p = get_path_pipeline()
-#         d_cpnt = {'general': os.path.join(root_p, "io", "general_schema"),
-#                   'dpco': os.path.join(root_c, "dpco", "io", "dpco_schema"),
-#                   'cali': os.path.join(root_c, "cali", "io", "cali_schema"),
-#                   'bube': os.path.join(root_c, "bube", "io", "bube_schema"),
-#                   'imag': os.path.join(root_c, "imag", "io", "imag_schema")
-#                    }
-#         for cpnt, cpath in d_cpnt.items():
-#             self.get_schema_json(cpnt)
-#             os.system(f'mv {cpath}.json {cpath}_old.json')
-#             self.write_json(cpath + '.json', False)
