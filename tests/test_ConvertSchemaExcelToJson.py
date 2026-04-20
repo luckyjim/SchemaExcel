@@ -26,17 +26,17 @@ dict_OK = {
 def test_conversion():
     path_master = osp.join(DATA_PATH, FILE_XLSX)
     obj_px = ConvertSchemaExcelToJson(path_master)
-    m_dict = obj_px.get_schema_json("FOR_TEST")
+    m_dict = obj_px.write_schema_all_sheets("FOR_TEST")
     assert m_dict != {}
-    obj_px.write_json(DATA_PATH)
+    obj_px._write_json(DATA_PATH)
 
 
 def test_for_test_component():
     path_master = osp.join(DATA_PATH, FILE_XLSX)
     obj_px = ConvertSchemaExcelToJson(path_master)
-    m_dict = obj_px.get_schema_json("FOR_TEST")
+    m_dict = obj_px.write_schema_all_sheets("FOR_TEST")
     assert m_dict != {}
-    obj_px.write_json(DATA_PATH)
+    obj_px._write_json(DATA_PATH)
     path_schema = osp.join(DATA_PATH, "for_test_schema.json")
     assert tc.check_add_default_file(path_schema, dict_OK)
     dict_OK["array_2D_number"] = [[10, 20]]
@@ -121,12 +121,12 @@ def nok_test_a_get_component():
     path_master = osp.join(DATA_PATH, "toto.xls")
     with pytest.raises(TypeError):
         obj = ConvertSchemaExcelToJson(path_master)
-        obj.get_schema_json("FOR_TEST")
+        obj.write_schema_all_sheets("FOR_TEST")
     path_master = osp.join(DATA_PATH, "toto.xlsx")
     with pytest.raises(FileNotFoundError):
         obj = ConvertSchemaExcelToJson(path_master)
-        obj.get_schema_json("FOR_TEST")
+        obj.write_schema_all_sheets("FOR_TEST")
     with pytest.raises(TypeError):
         path_master = osp.join(DATA_PATH, ".xlsx")
         obj = ConvertSchemaExcelToJson(path_master)
-        obj.get_schema_json("FOR_TEST")
+        obj.write_schema_all_sheets("FOR_TEST")
