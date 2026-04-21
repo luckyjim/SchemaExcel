@@ -287,6 +287,8 @@ class ParseOneRow:
             self._parse_jpeg(d_values)
         elif value_type[0] == "csv":
             self._parse_txt(d_values)
+        elif value_type[0] == "txt":
+            self._parse_txt(d_values)
         elif value_type[0] == "zip":
             self._parse_zip(d_values)
         elif value_type[0] == "array" and value_type[1] == "enum":
